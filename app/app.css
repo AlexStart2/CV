@@ -1,0 +1,46 @@
+/* Inter is self-hosted rather than loaded from Google Fonts: a render-blocking
+   third-party stylesheet can leave a cold-cache print() measuring fallback font
+   metrics, which silently reflows the CV onto a second page. It also keeps
+   visitor IPs from being sent to a third party. @import must come first. */
+@import "@fontsource-variable/inter";
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+:root {
+  /* Single source of truth for the sheet geometry, consumed by the <main>
+     element in routes/home.tsx. `@page { size }` below cannot read a var(),
+     so that one value is repeated — keep the two in step. */
+  --sheet-w: 210mm;
+  --sheet-h: 297mm;
+  --sheet-px: 12mm;
+  --sheet-py: 10mm;
+}
+
+/* The CV is a printed document: always light, regardless of OS theme. */
+html,
+body {
+  background: white;
+  color-scheme: light;
+}
+
+@page {
+  size: A4; /* matches --sheet-w x --sheet-h */
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    width: var(--sheet-w);
+  }
+
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

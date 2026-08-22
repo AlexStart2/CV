@@ -1,0 +1,29 @@
+# Dependencies / build output
+/node_modules/
+/.react-router/
+/build/
+
+# Personal data — NEVER commit.
+# cv-data.local.ts holds real CV content; the tracked sample lives in
+# cv-data.default.ts. The exact path below does not shadow
+# app/cv-data.local.example.ts, which is meant to be committed.
+app/cv-data.local.ts
+general-profile.md
+*.pdf
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Agent skill docs (third-party reference material)
+.agents/
+
+# Tooling caches
+.eslintcache
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

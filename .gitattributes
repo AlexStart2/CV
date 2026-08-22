@@ -1,0 +1,12 @@
+# Normalise line endings so the repo is identical across Windows, macOS and
+# Linux checkouts. Without this, files authored on Windows land in git with
+# CRLF and produce whole-file diffs for everyone else.
+* text=auto eol=lf
+
+# Binary — never touch these.
+*.ico binary
+*.png binary
+*.jpg binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

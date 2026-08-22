@@ -1,0 +1,24 @@
+# The Dockerfile uses `COPY . /app`, so this file is the only thing standing
+# between the build context and everything in the project directory.
+
+.git
+.github
+.agents
+node_modules
+.react-router
+build
+
+# Secrets and loose personal documents
+.env
+.env.*
+general-profile.md
+*.pdf
+
+# Not needed at runtime
+README.md
+LICENSE
+
+# NOTE: app/cv-data.local.ts is deliberately NOT ignored here.
+# The image exists so the owner can deploy their real CV; excluding the local
+# file would silently ship the fictional sample to production. This is the one
+# place where .dockerignore and .gitignore must diverge.
