@@ -4,7 +4,7 @@
  */
 export function Dot() {
   return (
-    <span aria-hidden="true" className="mx-1.5 text-gray-400">
+    <span aria-hidden="true" className="mx-(--sp-entry) text-gray-400">
       ·
     </span>
   );

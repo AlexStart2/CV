@@ -20,6 +20,13 @@ export interface EducationEntry {
   notes: string[];
 }
 
+export interface PublicationEntry {
+  title: string;
+  venue: string;
+  /** Added once the venue issues one; omit until then. */
+  doi?: string;
+}
+
 export interface SkillGroup {
   group: string;
   items: string;
@@ -43,6 +50,8 @@ export interface CvData {
   experience: ExperienceEntry[];
   projects: ProjectEntry[];
   education: EducationEntry[];
+  /** Optional: a CV without publications still type-checks without it. */
+  publications?: PublicationEntry[];
   achievements: string[];
   skills: SkillGroup[];
   languages: LanguageEntry[];

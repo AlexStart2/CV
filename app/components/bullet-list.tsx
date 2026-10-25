@@ -9,7 +9,7 @@
  */
 export function BulletList({ items }: { items: string[] }) {
   return (
-    <ul className="mt-0.5 list-disc space-y-0.5 pl-4.5">
+    <ul className="mt-(--sp-hair) list-disc space-y-(--sp-hair) pl-(--sp-bullet-indent)">
       {items.map((item, i) => (
         <li key={i}>{item}</li>
       ))}

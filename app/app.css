@@ -13,12 +13,47 @@
 
 :root {
   /* Single source of truth for the sheet geometry, consumed by the <main>
-     element in routes/home.tsx. `@page { size }` below cannot read a var(),
-     so that one value is repeated — keep the two in step. */
+     element in routes/home.tsx. `@page { margin }` below cannot read a var(),
+     so those two values are repeated — keep the three in step. */
   --sheet-w: 210mm;
   --sheet-h: 297mm;
   --sheet-px: 12mm;
   --sheet-py: 10mm;
+
+  /* Gutter drawn between pages on screen. Purely a screen affordance: print
+     gets real page breaks, so this never reaches the PDF. */
+  --page-gap: 8mm;
+
+  /* How many A4 pages the content currently occupies. Written by
+     lib/fit-to-page.ts; drives the screen sheet's height. */
+  --page-count: 1;
+
+  /* Density knob. 1 is the design size; every size below is derived from it,
+     so lowering it shrinks type and whitespace together and the layout keeps
+     its proportions. fit-to-page.ts lowers it only far enough to pull the CV
+     back onto one fewer page, and never past FIT_MIN_SCALE. */
+  --cv-scale: 1;
+
+  /* Type scale. pt, not rem — print units for a print document. */
+  --fs-name: calc(20pt * var(--cv-scale));
+  --fs-role: calc(11pt * var(--cv-scale));
+  --fs-contact: calc(8.7pt * var(--cv-scale));
+  --fs-section: calc(10pt * var(--cv-scale));
+  --fs-entry: calc(10.5pt * var(--cv-scale));
+  --fs-meta: calc(9pt * var(--cv-scale));
+  --fs-caption: calc(8.5pt * var(--cv-scale));
+  --fs-body: calc(9.2pt * var(--cv-scale));
+
+  /* Spacing scale, named for what it separates rather than by size. */
+  --sp-section: calc(16px * var(--cv-scale));
+  --sp-block: calc(10px * var(--cv-scale));
+  --sp-entry: calc(6px * var(--cv-scale));
+  --sp-line: calc(4px * var(--cv-scale));
+  --sp-hair: calc(2px * var(--cv-scale));
+  --sp-bullet-indent: calc(18px * var(--cv-scale));
+  --sp-meta-gap: calc(16px * var(--cv-scale));
+  --sp-skill-gap: calc(12px * var(--cv-scale));
+  --w-skill-label: calc(6rem * var(--cv-scale));
 }
 
 /* The CV is a printed document: always light, regardless of OS theme. */
@@ -30,17 +65,89 @@ body {
 
 @page {
   size: A4; /* matches --sheet-w x --sheet-h */
-  margin: 0;
+
+  /* Page margins live here rather than as padding on the sheet so that
+     *every* page gets them — padding would only indent the top of page 1 and
+     the bottom of the last one. Matches --sheet-py --sheet-px; @page cannot
+     read a var(), so keep them in step.
+
+     Consequence: the browser's print dialog must be left on margins "Default".
+     Choosing "None" overrides this rule and prints edge to edge. */
+  margin: 10mm 12mm;
+}
+
+/* The sheet. Its height snaps to a whole number of pages, and the gaps between
+   them are painted rather than laid out, so the gutter costs no flow space. */
+.cv-sheet {
+  background-color: white;
+}
+
+@media screen {
+  .cv-sheet {
+    min-height: calc(
+      var(--page-count) * var(--sheet-h) + (var(--page-count) - 1) *
+        var(--page-gap)
+    );
+    background-color: transparent;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      white 0,
+      white var(--sheet-h),
+      transparent var(--sheet-h),
+      transparent calc(var(--sheet-h) + var(--page-gap))
+    );
+  }
+
+  /* On screen there are no page breaks, so the space a break would consume is
+     inserted here instead. fit-to-page.ts sets --page-shift to the exact
+     amount: the unused tail of the outgoing page plus the two page margins and
+     the gutter. Screen and print therefore break in the same places, at the
+     same offsets.
+
+     Padding rather than margin, for two reasons: a margin would collapse with
+     the preceding section's margin-bottom and swallow part of the shift, and
+     the skills list is a grid, where a spacer pseudo-element would become a
+     grid item. Nothing carrying [data-atom] sets its own padding-top. */
+  [data-page-start] {
+    padding-top: var(--page-shift, 0px);
+  }
 }
 
 @media print {
   html,
   body {
-    width: var(--sheet-w);
+    width: auto;
   }
 
   * {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+
+  /* fit-to-page.ts has already decided where the pages divide; forcing the
+     break here means the printed pagination is the one that was measured
+     rather than one the browser re-derives. */
+  [data-page-start] {
+    break-before: page;
+  }
+
+  /* Backstop for anything the simulation did not mark, and the rule that makes
+     it predictable: an entry is atomic, and a heading never ends a page. */
+  [data-atom] {
+    break-inside: avoid;
+  }
+
+  h2 {
+    break-after: avoid;
+  }
+
+  li {
+    break-inside: avoid;
+  }
+
+  p,
+  li {
+    orphans: 2;
+    widows: 2;
   }
 }

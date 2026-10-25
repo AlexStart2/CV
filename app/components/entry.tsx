@@ -20,6 +20,9 @@ export interface EntryProps {
  * These three sections share the same shape — a title row with right-aligned
  * metadata, an optional caption, and a bulleted body — so they share one
  * component rather than three near-identical copies.
+ *
+ * An entry is an atom: pagination moves it whole to the next page rather than
+ * splitting a role across the fold. See lib/fit-to-page.ts.
  */
 export function Entry({
   title,
@@ -30,20 +33,24 @@ export function Entry({
   className,
 }: EntryProps) {
   return (
-    <div className={cn("mb-2.5 last:mb-0", className)}>
+    <div data-atom className={cn("mb-(--sp-block) last:mb-0", className)}>
       <div className="flex items-baseline justify-between">
-        <h3 className="text-[10.5pt] font-semibold">
+        <h3 className="text-(length:--fs-entry) font-semibold">
           {title}
           {subtitle && (
             <span className="font-normal text-gray-600"> {subtitle}</span>
           )}
         </h3>
         {meta && (
-          <span className="shrink-0 pl-4 text-[9pt] text-gray-600">{meta}</span>
+          <span className="shrink-0 pl-(--sp-meta-gap) text-(length:--fs-meta) text-gray-600">
+            {meta}
+          </span>
         )}
       </div>
       {caption && (
-        <p className="text-[8.5pt] text-gray-500 italic">{caption}</p>
+        <p className="text-(length:--fs-caption) text-gray-500 italic">
+          {caption}
+        </p>
       )}
       <BulletList items={bullets} />
     </div>
